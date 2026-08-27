@@ -198,7 +198,8 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .site-header{position:sticky;top:0;z-index:60;background:rgba(5,5,5,0.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
 .nav{display:flex;align-items:center;justify-content:space-between;height:72px;gap:24px}
 .logo{display:flex;align-items:center;gap:10px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px;letter-spacing:0.04em;color:#fff}
-.logo .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 14px var(--glow)}
+.brand-mark{width:30px;height:30px;flex-shrink:0;overflow:visible}
+.brand-mark path{filter:drop-shadow(0 0 6px var(--glow))}
 .nav-menu{display:flex;gap:30px}
 .nav-menu a{color:var(--text-mute);font-size:15px;font-weight:500;transition:var(--t)}
 .nav-menu a:hover{color:#fff}
@@ -423,7 +424,14 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 <header class="site-header">
   <div class="container">
     <nav class="nav" aria-label="Головна навігація">
-      <a href="#top" class="logo" aria-label="NYTKA — головна сторінка"><span class="dot"></span>NYTKA</a>
+      <a href="#top" class="logo" aria-label="NYTKA — головна сторінка"><svg class="brand-mark" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+        <path d="M18 48 L18 16 L46 48 L46 22" stroke="var(--accent)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M24 46 L24 20" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round" opacity="0.9"/>
+        <path d="M40 44 L40 24" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round" opacity="0.9"/>
+        <path d="M46 22 L43 10" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" opacity="0.85"/>
+        <path d="M46 22 L47.5 8" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" opacity="0.7"/>
+        <path d="M46 22 L51 11" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+      </svg>NYTKA</a>
       <ul class="nav-menu" id="navMenu">
         <li><a href="#catalog">Продукти</a></li>
         <li><a href="#materials">Матеріали</a></li>
@@ -692,7 +700,14 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
   <div class="container">
     <div class="footer-grid">
       <div class="footer-brand">
-        <a href="#top" class="logo"><span class="dot"></span>NYTKA</a>
+        <a href="#top" class="logo"><svg class="brand-mark" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+        <path d="M18 48 L18 16 L46 48 L46 22" stroke="var(--accent)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M24 46 L24 20" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round" opacity="0.9"/>
+        <path d="M40 44 L40 24" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round" opacity="0.9"/>
+        <path d="M46 22 L43 10" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" opacity="0.85"/>
+        <path d="M46 22 L47.5 8" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" opacity="0.7"/>
+        <path d="M46 22 L51 11" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+      </svg>NYTKA</a>
         <p>Філамент преміум-якості для 3D-друку. Точність, оригінал, швидка доставка по всій Україні.</p>
         <div class="footer-contacts">
           <a href="mailto:hello@nytka.ua">hello@nytka.ua</a>
