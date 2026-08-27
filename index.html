@@ -260,13 +260,15 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .badge{position:absolute;top:14px;left:14px;font-size:11px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;padding:5px 11px;border-radius:20px;font-family:'Space Grotesk',sans-serif}
 .badge.hit{background:var(--accent);color:#fff}
 .badge.new{background:#7C3AED;color:#fff}
+.badge.sale{background:#ef4444;color:#fff}
 .product-body{padding:20px;display:flex;flex-direction:column;gap:8px;flex:1}
 .product-body h3{font-size:17px}
 .product-meta{font-size:13px;color:var(--text-mute)}
 .rating{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-mute)}
 .stars{color:var(--accent);letter-spacing:1px}
-.price{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;color:#fff;margin-top:2px}
+.price{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;color:#fff;margin-top:2px;display:flex;align-items:baseline;gap:8px}
 .price span{font-size:14px;font-weight:500;color:var(--text-mute)}
+.price .old{font-size:15px;font-weight:500;color:var(--text-mute);text-decoration:line-through}
 .product-actions{display:flex;gap:10px;margin-top:auto;padding-top:8px}
 .product-actions .btn{flex:1;justify-content:center}
 
@@ -771,18 +773,18 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 /* ============ PRODUCT DATA ============ */
 const PRODUCTS = [
   {id:'pla-blk', name:'PLA+ 1.75мм — Чорний', cat:'PLA', meta:'Чорний · PLA+ · 1 кг', rating:4.8, price:350, badge:'hit', grad:'linear-gradient(135deg,#2b2b33,#0c0c12)', img:'images/products/pla-blk.jpg'},
-  {id:'petg-clr', name:'PETG 1.75мм — Прозорий', cat:'PETG', meta:'Прозорий · PETG · 3 кг', rating:4.9, price:1050, badge:null, grad:'linear-gradient(135deg,#9fe7ff,#3aa6c9)', img:'images/products/petg-clr.jpg'},
-  {id:'petg-blk', name:'PETG 1.75мм — Чорний', cat:'PETG', meta:'Чорний · PETG · 3 кг', rating:4.9, price:1050, badge:null, grad:'linear-gradient(135deg,#3a3a3a,#0a0a0a)', img:'images/products/petg-blk.jpg'},
-  {id:'petg-red', name:'PETG 1.75мм — Червоний', cat:'PETG', meta:'Червоний · PETG · 3 кг', rating:4.8, price:1050, badge:null, grad:'linear-gradient(135deg,#ff5252,#b81d1d)', img:'images/products/petg-red.jpg'},
-  {id:'petg-khaki', name:'PETG 1.75мм — Хакі', cat:'PETG', meta:'Хакі · PETG · 3 кг', rating:4.8, price:1050, badge:null, grad:'linear-gradient(135deg,#a49463,#6b5f3e)', img:'images/products/petg-khaki.jpg'},
-  {id:'petg-graphite', name:'PETG 1.75мм — Сірий графіт', cat:'PETG', meta:'Сірий графіт · PETG · 3 кг', rating:4.8, price:1050, badge:null, grad:'linear-gradient(135deg,#7a7d85,#3f4147)', img:'images/products/petg-graphite.jpg'},
+  {id:'petg-clr', name:'PETG 1.75мм — Прозорий', cat:'PETG', meta:'Прозорий · PETG · 3 кг', rating:4.9, price:1050, oldPrice:1350, badge:'sale', grad:'linear-gradient(135deg,#9fe7ff,#3aa6c9)', img:'images/products/petg-clr.jpg'},
+  {id:'petg-blk', name:'PETG 1.75мм — Чорний', cat:'PETG', meta:'Чорний · PETG · 3 кг', rating:4.9, price:1050, oldPrice:1350, badge:'sale', grad:'linear-gradient(135deg,#3a3a3a,#0a0a0a)', img:'images/products/petg-blk.jpg'},
+  {id:'petg-red', name:'PETG 1.75мм — Червоний', cat:'PETG', meta:'Червоний · PETG · 3 кг', rating:4.8, price:1050, oldPrice:1350, badge:'sale', grad:'linear-gradient(135deg,#ff5252,#b81d1d)', img:'images/products/petg-red.jpg'},
+  {id:'petg-khaki', name:'PETG 1.75мм — Хакі', cat:'PETG', meta:'Хакі · PETG · 3 кг', rating:4.8, price:1050, oldPrice:1350, badge:'sale', grad:'linear-gradient(135deg,#a49463,#6b5f3e)', img:'images/products/petg-khaki.jpg'},
+  {id:'petg-graphite', name:'PETG 1.75мм — Сірий графіт', cat:'PETG', meta:'Сірий графіт · PETG · 3 кг', rating:4.8, price:1050, oldPrice:1350, badge:'sale', grad:'linear-gradient(135deg,#7a7d85,#3f4147)', img:'images/products/petg-graphite.jpg'},
   {id:'abs-wht', name:'ABS 1.75мм — Білий', cat:'ABS', meta:'Білий · ABS · 1 кг', rating:4.7, price:390, badge:null, grad:'linear-gradient(135deg,#f2f2f2,#bcbcc4)', img:'images/products/abs-wht.jpg'},
   {id:'tpu-red', name:'TPU Flex 1.75мм — Червоний', cat:'TPU', meta:'Червоний · TPU · 0.5 кг', rating:4.6, price:480, badge:'new', grad:'linear-gradient(135deg,#ff5252,#b81d1d)', img:'images/products/tpu-red.jpg'},
   {id:'pla-gld', name:'PLA Silk 1.75мм — Золотий', cat:'PLA', meta:'Золотий · PLA Silk · 1 кг', rating:4.9, price:410, badge:'hit', grad:'linear-gradient(135deg,#ffd87a,#c9941f)', img:'images/products/pla-gld.jpg'},
   {id:'nyl-cf', name:'Nylon CF 1.75мм — Карбон', cat:'Special', meta:'Карбон · Nylon-CF · 0.75 кг', rating:4.8, price:890, badge:'new', grad:'linear-gradient(135deg,#3a3a42,#0a0a0f)', img:'images/products/nyl-cf.jpg'}
 ];
 const FREE_SHIP = 1500;
-const badgeLabel = {hit:'Хіт продажів', new:'Новинка'};
+const badgeLabel = {hit:'Хіт продажів', new:'Новинка', sale:'Знижка'};
 
 /* ============ STATE ============ */
 let cart = [];
@@ -808,7 +810,7 @@ function renderProducts(filter='all'){
         <h3>${p.name}</h3>
         <div class="product-meta">${p.meta}</div>
         <div class="rating"><span class="stars" aria-hidden="true">${stars}</span> ${p.rating.toFixed(1)} ★</div>
-        <div class="price">${p.price} <span>грн</span></div>
+        <div class="price">${p.oldPrice ? `<span class="old">${p.oldPrice} грн</span>` : ''}${p.price} <span>грн</span></div>
         <div class="product-actions">
           <button class="btn btn-primary btn-sm add-btn" data-id="${p.id}" aria-label="Додати ${p.name} в кошик">В кошик</button>
           <a href="#guide" class="btn btn-ghost btn-sm">Детальніше</a>
