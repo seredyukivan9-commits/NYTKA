@@ -378,6 +378,9 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .ci-remove{background:none;border:none;color:var(--text-mute);cursor:pointer;font-size:12px;transition:var(--t)}
 .ci-remove:hover{color:var(--accent)}
 .drawer-foot{border-top:1px solid var(--border);padding:20px 24px}
+.checkout-form{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.checkout-form input{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;color:#fff;font-size:14px;font-family:inherit}
+.checkout-form input::placeholder{color:var(--text-mute)}
 .cart-total{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .cart-total .lbl{color:var(--text-mute);font-size:15px}
 .cart-total .sum{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;color:#fff}
@@ -761,6 +764,10 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
   </div>
   <div class="cart-items" id="cartItems"></div>
   <div class="drawer-foot">
+    <div class="checkout-form">
+      <input type="text" id="coName" placeholder="Ваше ім'я" aria-label="Ім'я">
+      <input type="tel" id="coPhone" placeholder="Телефон" aria-label="Телефон">
+    </div>
     <div class="cart-total"><span class="lbl">Разом</span><span class="sum" id="cartSum">0 грн</span></div>
     <div class="row">
       <button class="btn btn-ghost" id="continueBtn">Продовжити покупки</button>
@@ -915,12 +922,42 @@ $('#cartBtn').addEventListener('click', openCart);
 $('#drawerClose').addEventListener('click', closeCart);
 $('#overlay').addEventListener('click', closeCart);
 $('#continueBtn').addEventListener('click', closeCart);
-$('#checkoutBtn').addEventListener('click', ()=>{
+const TELEGRAM_BOT_TOKEN = '8992591925:AAFKHftgJA61lDRsa2tUU4hS_sK2X-S3x1E';
+const TELEGRAM_CHAT_ID = '508158955';
+
+async function sendOrderToTelegram(text){
+  const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({chat_id: TELEGRAM_CHAT_ID, text})
+  });
+  if(!res.ok) throw new Error('Telegram request failed');
+}
+
+$('#checkoutBtn').addEventListener('click', async ()=>{
   if(cart.length===0){ alert('Кошик порожній. Додайте товари перед оформленням.'); return; }
+  const name = $('#coName').value.trim();
+  const phone = $('#coPhone').value.trim();
+  if(!name || !phone){ alert("Вкажіть ім'я та телефон, щоб оформити замовлення."); return; }
+
   const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
   const ship = total>=FREE_SHIP ? 'безкоштовна' : '60 грн';
-  alert(`Дякуємо за замовлення!\n\nТоварів: ${cart.reduce((s,i)=>s+i.qty,0)} шт\nСума: ${total} грн\nДоставка: ${ship}\n\nМенеджер зв'яжеться з вами для підтвердження.`);
-  cart = []; saveCart(); updateCart(); closeCart();
+  const itemsList = cart.map(i=>`• ${i.name} — ${i.qty} шт × ${i.price} грн = ${i.qty*i.price} грн`).join('\n');
+  const text = `Нове замовлення NYTKA\n\nІм'я: ${name}\nТелефон: ${phone}\n\n${itemsList}\n\nРазом: ${total} грн\nДоставка: ${ship}`;
+
+  const btn = $('#checkoutBtn');
+  btn.disabled = true; btn.textContent = 'Надсилаємо…';
+  try{
+    await sendOrderToTelegram(text);
+    alert("Дякуємо за замовлення! Менеджер зв'яжеться з вами найближчим часом.");
+    cart = []; saveCart(); updateCart(); closeCart();
+    $('#coName').value=''; $('#coPhone').value='';
+  }catch(err){
+    alert('Не вдалося відправити замовлення. Спробуйте ще раз або зателефонуйте нам.');
+  }finally{
+    btn.disabled = false; btn.textContent = 'Оформити замовлення';
+  }
 });
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeCart(); });
 
