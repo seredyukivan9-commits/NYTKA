@@ -360,7 +360,8 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .cart-empty{text-align:center;color:var(--text-mute);padding:60px 20px;font-size:15px}
 .cart-empty .em-ic{font-size:42px;margin-bottom:12px;opacity:0.4}
 .cart-item{display:flex;gap:14px;padding:18px 0;border-bottom:1px solid var(--border)}
-.ci-img{width:64px;height:64px;border-radius:12px;flex-shrink:0}
+.ci-img{position:relative;width:64px;height:64px;border-radius:12px;flex-shrink:0;overflow:hidden}
+.ci-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:left center}
 .ci-info{flex:1;min-width:0}
 .ci-info h4{font-size:14px;color:#fff;margin-bottom:3px;font-family:'Inter',sans-serif;font-weight:600}
 .ci-info .ci-meta{font-size:12px;color:var(--text-mute)}
@@ -849,7 +850,7 @@ function findItem(id){ return cart.find(i=>i.id===id); }
 function addToCart(id){
   const p = PRODUCTS.find(x=>x.id===id);
   const item = findItem(id);
-  if(item){ item.qty++; } else { cart.push({id:p.id, name:p.name, price:p.price, meta:p.meta, grad:p.grad, qty:1}); }
+  if(item){ item.qty++; } else { cart.push({id:p.id, name:p.name, price:p.price, meta:p.meta, grad:p.grad, img:p.img, qty:1}); }
   saveCart(); updateCart();
   const btn = $('#cartBtn'); btn.classList.remove('bounce'); void btn.offsetWidth; btn.classList.add('bounce');
 }
@@ -874,7 +875,7 @@ function updateCart(){
   } else {
     wrap.innerHTML = cart.map(i=>`
       <div class="cart-item">
-        <div class="ci-img" style="background:${i.grad}"></div>
+        <div class="ci-img" style="background:${i.grad}">${i.img ? `<img src="${i.img}" alt="${i.name}" loading="lazy" onerror="this.remove()">` : ''}</div>
         <div class="ci-info">
           <h4>${i.name}</h4>
           <div class="ci-meta">${i.meta}</div>
