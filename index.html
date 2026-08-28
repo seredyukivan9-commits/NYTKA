@@ -379,8 +379,10 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .ci-remove:hover{color:var(--accent)}
 .drawer-foot{border-top:1px solid var(--border);padding:20px 24px}
 .checkout-form{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
-.checkout-form input{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;color:#fff;font-size:14px;font-family:inherit}
+.checkout-form input,.checkout-form select{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;color:#fff;font-size:14px;font-family:inherit}
 .checkout-form input::placeholder{color:var(--text-mute)}
+.checkout-form select{appearance:none;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="6" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" stroke="%238b93a7" stroke-width="1.5" fill="none" fill-rule="evenodd"/></svg>');background-repeat:no-repeat;background-position:right 14px center;padding-right:32px}
+.checkout-form select option{background:var(--card);color:#fff}
 .cart-total{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .cart-total .lbl{color:var(--text-mute);font-size:15px}
 .cart-total .sum{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;color:#fff}
@@ -767,6 +769,12 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
     <div class="checkout-form">
       <input type="text" id="coName" placeholder="Ваше ім'я" aria-label="Ім'я">
       <input type="tel" id="coPhone" placeholder="Телефон" aria-label="Телефон">
+      <select id="coCarrier" aria-label="Служба доставки">
+        <option value="Нова Пошта">Нова Пошта</option>
+        <option value="Укрпошта">Укрпошта</option>
+      </select>
+      <input type="text" id="coCity" placeholder="Місто" aria-label="Місто">
+      <input type="text" id="coBranch" placeholder="№ відділення" aria-label="Номер відділення">
     </div>
     <div class="cart-total"><span class="lbl">Разом</span><span class="sum" id="cartSum">0 грн</span></div>
     <div class="row">
@@ -939,12 +947,16 @@ $('#checkoutBtn').addEventListener('click', async ()=>{
   if(cart.length===0){ alert('Кошик порожній. Додайте товари перед оформленням.'); return; }
   const name = $('#coName').value.trim();
   const phone = $('#coPhone').value.trim();
+  const carrier = $('#coCarrier').value;
+  const city = $('#coCity').value.trim();
+  const branch = $('#coBranch').value.trim();
   if(!name || !phone){ alert("Вкажіть ім'я та телефон, щоб оформити замовлення."); return; }
+  if(!city || !branch){ alert('Вкажіть місто та номер відділення для доставки.'); return; }
 
   const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
   const ship = total>=FREE_SHIP ? 'безкоштовна' : '60 грн';
   const itemsList = cart.map(i=>`• ${i.name} — ${i.qty} шт × ${i.price} грн = ${i.qty*i.price} грн`).join('\n');
-  const text = `Нове замовлення NYTKA\n\nІм'я: ${name}\nТелефон: ${phone}\n\n${itemsList}\n\nРазом: ${total} грн\nДоставка: ${ship}`;
+  const text = `Нове замовлення NYTKA\n\nІм'я: ${name}\nТелефон: ${phone}\nДоставка: ${carrier}, м. ${city}, відділення №${branch}\n\n${itemsList}\n\nРазом: ${total} грн\nВартість доставки: ${ship}`;
 
   const btn = $('#checkoutBtn');
   btn.disabled = true; btn.textContent = 'Надсилаємо…';
@@ -952,7 +964,7 @@ $('#checkoutBtn').addEventListener('click', async ()=>{
     await sendOrderToTelegram(text);
     alert("Дякуємо за замовлення! Менеджер зв'яжеться з вами найближчим часом.");
     cart = []; saveCart(); updateCart(); closeCart();
-    $('#coName').value=''; $('#coPhone').value='';
+    $('#coName').value=''; $('#coPhone').value=''; $('#coCity').value=''; $('#coBranch').value='';
   }catch(err){
     alert('Не вдалося відправити замовлення. Спробуйте ще раз або зателефонуйте нам.');
   }finally{
