@@ -294,6 +294,8 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .mat-row dt{color:var(--text-mute)}
 .mat-row dd{color:var(--text);font-weight:500;text-align:right}
 .mat-card .btn{margin-top:20px}
+.mat-more{display:block;text-align:center;margin-top:10px;font-size:13px;color:var(--text-mute);transition:var(--t)}
+.mat-more:hover{color:var(--accent)}
 .diff{display:inline-flex;gap:3px}
 .diff i{width:7px;height:7px;border-radius:50%;background:var(--border-strong);font-style:normal}
 .diff i.on{background:var(--accent)}
@@ -559,6 +561,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
           <div class="mat-row"><dt>Ціна</dt><dd>від 350 грн</dd></div>
         </dl>
         <button class="btn btn-ghost btn-block choose-mat" data-filter="PLA">Обрати цей матеріал</button>
+        <a href="pla-filament/" class="mat-more">Детальніше про PLA →</a>
       </article>
       <article class="mat-card">
         <h3>ABS</h3><div class="mat-tag">Міцні деталі</div>
@@ -578,9 +581,10 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
           <div class="mat-row"><dt>Температура</dt><dd>230–250°C</dd></div>
           <div class="mat-row"><dt>Міцність</dt><dd>Висока</dd></div>
           <div class="mat-row"><dt>Складність</dt><dd><span class="diff"><i class="on"></i><i class="on"></i><i></i></span></dd></div>
-          <div class="mat-row"><dt>Ціна</dt><dd>від 420 грн</dd></div>
+          <div class="mat-row"><dt>Ціна</dt><dd>від 1050 грн</dd></div>
         </dl>
         <button class="btn btn-ghost btn-block choose-mat" data-filter="PETG">Обрати цей матеріал</button>
+        <a href="petg-filament/" class="mat-more">Детальніше про PETG →</a>
       </article>
       <article class="mat-card">
         <h3>TPU</h3><div class="mat-tag">Гнучкий</div>
@@ -720,11 +724,11 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
       <div class="footer-col">
         <h4>Каталог</h4>
         <ul>
-          <li><a href="#catalog">PLA філамент</a></li>
-          <li><a href="#catalog">PETG філамент</a></li>
-          <li><a href="#catalog">ABS філамент</a></li>
-          <li><a href="#catalog">TPU гнучкий</a></li>
-          <li><a href="#catalog">Спеціальні</a></li>
+          <li><a href="pla-filament/">PLA філамент</a></li>
+          <li><a href="petg-filament/">PETG філамент</a></li>
+          <li><a href="?filter=ABS#catalog">ABS філамент</a></li>
+          <li><a href="?filter=TPU#catalog">TPU гнучкий</a></li>
+          <li><a href="?filter=Special#catalog">Спеціальні</a></li>
         </ul>
       </div>
       <div class="footer-col">
@@ -995,8 +999,12 @@ $('#newsBtn').addEventListener('click', ()=>{
 });
 
 /* ============ INIT ============ */
-renderProducts();
+const urlFilter = new URLSearchParams(location.search).get('filter');
+const validFilter = urlFilter && document.querySelector(`.filter-btn[data-filter="${urlFilter}"]`) ? urlFilter : 'all';
+document.querySelectorAll('.filter-btn').forEach(x=>x.classList.toggle('active', x.dataset.filter===validFilter));
+renderProducts(validFilter);
 updateCart();
+if(urlFilter && validFilter!=='all'){ document.getElementById('catalog').scrollIntoView(); }
 </script>
 </body>
 </html>
