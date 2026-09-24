@@ -814,6 +814,25 @@ const PRODUCTS = [
   {id:'pla-gld', name:'PLA Silk 1.75мм — Золотий', cat:'PLA', meta:'Золотий · PLA Silk · 1 кг', rating:4.9, price:410, badge:'hit', grad:'linear-gradient(135deg,#ffd87a,#c9941f)', img:'images/products/pla-gld.jpg'}
 ];
 const badgeLabel = {hit:'Хіт продажів', new:'Новинка', sale:'Знижка'};
+
+/* ============ TIKTOK PIXEL EVENTS ============ */
+async function ttSha256(str){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str.trim().toLowerCase()));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function ttNormalizePhone(raw){
+  let d = raw.replace(/\D/g,'');
+  if(d.startsWith('0')) d = '380'+d.slice(1);
+  else if(d.length===9) d = '380'+d;
+  return '+'+d;
+}
+async function ttIdentifyByPhone(phone){
+  if(!window.ttq || !phone) return;
+  try{ ttq.identify({ phone_number: await ttSha256(ttNormalizePhone(phone)) }); }catch(e){}
+}
+function ttContents(items){
+  return items.map(i=>({content_id:i.id, content_type:'product', content_name:i.name}));
+}
 const MATERIAL_SPECS = {
   PLA: {nozzle:'190–220°C', bed:'50–60°C', dry:'45°C, 4-6 год'},
   PETG: {nozzle:'230–250°C', bed:'70–80°C', dry:'65°C, 4-6 год'},
@@ -887,6 +906,10 @@ function addToCart(id){
   if(item){ item.qty++; } else { cart.push({id:p.id, name:p.name, price:p.price, meta:p.meta, grad:p.grad, img:p.img, qty:1}); }
   saveCart(); updateCart();
   const btn = $('#cartBtn'); btn.classList.remove('bounce'); void btn.offsetWidth; btn.classList.add('bounce');
+  if(window.ttq) ttq.track('AddToCart', {
+    contents: [{content_id:p.id, content_type:'product', content_name:p.name}],
+    value: p.price, currency: 'UAH'
+  });
 }
 function changeQty(id, d){
   const item = findItem(id); if(!item) return;
@@ -974,11 +997,19 @@ $('#checkoutBtn').addEventListener('click', async ()=>{
   const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
   const itemsList = cart.map(i=>`• ${i.name} — ${i.qty} шт × ${i.price} грн = ${i.qty*i.price} грн`).join('\n');
   const text = `Нове замовлення NYTKA\n\nІм'я: ${name}\nТелефон: ${phone}\nДоставка: ${carrier}, м. ${city}, відділення №${branch}\n\n${itemsList}\n\nРазом: ${total} грн`;
+  const contents = ttContents(cart);
+
+  await ttIdentifyByPhone(phone);
+  if(window.ttq) ttq.track('InitiateCheckout', {contents, value: total, currency: 'UAH'});
 
   const btn = $('#checkoutBtn');
   btn.disabled = true; btn.textContent = 'Надсилаємо…';
   try{
     await sendOrderToTelegram(text);
+    if(window.ttq){
+      ttq.track('PlaceAnOrder', {contents, value: total, currency: 'UAH'});
+      ttq.track('Purchase', {contents, value: total, currency: 'UAH'});
+    }
     alert("Дякуємо за замовлення! Менеджер зв'яжеться з вами найближчим часом.");
     cart = []; saveCart(); updateCart(); closeCart();
     $('#coName').value=''; $('#coPhone').value=''; $('#coCity').value=''; $('#coBranch').value='';
