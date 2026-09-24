@@ -101,13 +101,13 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
         "@type": "Product", "name": "PLA+ 1.75мм — Чорний", "sku": "FL-PLA-BLK",
         "image": "https://www.nytka.store/images/products/pla-blk.jpg",
         "brand": {"@type":"Brand","name":"NYTKA"},
-        "offers": {"@type":"Offer","price":"350","priceCurrency":"UAH","availability":"https://schema.org/InStock","url":"https://www.nytka.store/#catalog"},
+        "offers": {"@type":"Offer","price":"350","priceCurrency":"UAH","availability":"https://schema.org/OutOfStock","url":"https://www.nytka.store/#catalog"},
         "aggregateRating": {"@type":"AggregateRating","ratingValue":"4.8","reviewCount":"214"} } },
     { "@type": "ListItem", "position": 2, "item": {
         "@type": "Product", "name": "PETG 1.75мм — Прозорий", "sku": "FL-PETG-CLR",
         "image": "https://www.nytka.store/images/products/petg-clr.jpg",
         "brand": {"@type":"Brand","name":"NYTKA"},
-        "offers": {"@type":"Offer","price":"1050","priceCurrency":"UAH","availability":"https://schema.org/InStock","url":"https://www.nytka.store/#catalog"},
+        "offers": {"@type":"Offer","price":"1050","priceCurrency":"UAH","availability":"https://schema.org/OutOfStock","url":"https://www.nytka.store/#catalog"},
         "aggregateRating": {"@type":"AggregateRating","ratingValue":"4.9","reviewCount":"178"} } },
     { "@type": "ListItem", "position": 3, "item": {
         "@type": "Product", "name": "PETG 1.75мм — Чорний", "sku": "FL-PETG-BLK",
@@ -119,7 +119,7 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
         "@type": "Product", "name": "PETG 1.75мм — Червоний", "sku": "FL-PETG-RED",
         "image": "https://www.nytka.store/images/products/petg-red.jpg",
         "brand": {"@type":"Brand","name":"NYTKA"},
-        "offers": {"@type":"Offer","price":"1050","priceCurrency":"UAH","availability":"https://schema.org/InStock","url":"https://www.nytka.store/#catalog"},
+        "offers": {"@type":"Offer","price":"1050","priceCurrency":"UAH","availability":"https://schema.org/OutOfStock","url":"https://www.nytka.store/#catalog"},
         "aggregateRating": {"@type":"AggregateRating","ratingValue":"4.8","reviewCount":"87"} } },
     { "@type": "ListItem", "position": 5, "item": {
         "@type": "Product", "name": "PETG 1.75мм — Хакі", "sku": "FL-PETG-KHK",
@@ -137,7 +137,7 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
         "@type": "Product", "name": "PLA Silk 1.75мм — Золотий", "sku": "FL-PLA-GLD",
         "image": "https://www.nytka.store/images/products/pla-gld.jpg",
         "brand": {"@type":"Brand","name":"NYTKA"},
-        "offers": {"@type":"Offer","price":"410","priceCurrency":"UAH","availability":"https://schema.org/InStock","url":"https://www.nytka.store/#catalog"},
+        "offers": {"@type":"Offer","price":"410","priceCurrency":"UAH","availability":"https://schema.org/OutOfStock","url":"https://www.nytka.store/#catalog"},
         "aggregateRating": {"@type":"AggregateRating","ratingValue":"4.9","reviewCount":"141"} } }
   ]
 }
@@ -285,6 +285,10 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .badge.hit{background:var(--accent);color:#fff}
 .badge.new{background:#7C3AED;color:#fff}
 .badge.sale{background:#ef4444;color:#fff}
+.badge.oos{background:#4b4f5c;color:#fff}
+.product.oos .product-img{filter:grayscale(1) brightness(.75)}
+.product.oos .price{opacity:.55}
+.product-actions .btn:disabled{opacity:.45;cursor:not-allowed}
 .product-body{padding:20px;display:flex;flex-direction:column;gap:8px;flex:1}
 .product-body h3{font-size:17px}
 .product-meta{font-size:13px;color:var(--text-mute)}
@@ -805,13 +809,13 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 <script>
 /* ============ PRODUCT DATA ============ */
 const PRODUCTS = [
-  {id:'pla-blk', name:'PLA+ 1.75мм — Чорний', cat:'PLA', meta:'Чорний · PLA+ · 1 кг', rating:4.8, price:350, badge:'hit', grad:'linear-gradient(135deg,#2b2b33,#0c0c12)', img:'images/products/pla-blk.jpg'},
-  {id:'petg-clr', name:'PETG 1.75мм — Прозорий', cat:'PETG', meta:'Прозорий · PETG · 3 кг', rating:4.9, price:1050, oldPrice:1350, badge:'sale', grad:'linear-gradient(135deg,#9fe7ff,#3aa6c9)', img:'images/products/petg-clr.jpg'},
-  {id:'petg-blk', name:'PETG 1.75мм — Чорний', cat:'PETG', meta:'Чорний · PETG · 3 кг', rating:4.9, price:1050, oldPrice:1350, badge:'sale', grad:'linear-gradient(135deg,#3a3a3a,#0a0a0a)', img:'images/products/petg-blk.jpg'},
-  {id:'petg-red', name:'PETG 1.75мм — Червоний', cat:'PETG', meta:'Червоний · PETG · 3 кг', rating:4.8, price:1050, oldPrice:1350, badge:'sale', grad:'linear-gradient(135deg,#ff5252,#b81d1d)', img:'images/products/petg-red.jpg'},
-  {id:'petg-khaki', name:'PETG 1.75мм — Хакі', cat:'PETG', meta:'Хакі · PETG · 3 кг', rating:4.8, price:1050, oldPrice:1350, badge:'sale', grad:'linear-gradient(135deg,#a49463,#6b5f3e)', img:'images/products/petg-khaki.jpg'},
-  {id:'petg-graphite', name:'PETG 1.75мм — Сірий графіт', cat:'PETG', meta:'Сірий графіт · PETG · 3 кг', rating:4.8, price:1050, oldPrice:1350, badge:'sale', grad:'linear-gradient(135deg,#7a7d85,#3f4147)', img:'images/products/petg-graphite.jpg'},
-  {id:'pla-gld', name:'PLA Silk 1.75мм — Золотий', cat:'PLA', meta:'Золотий · PLA Silk · 1 кг', rating:4.9, price:410, badge:'hit', grad:'linear-gradient(135deg,#ffd87a,#c9941f)', img:'images/products/pla-gld.jpg'}
+  {id:'pla-blk', name:'PLA+ 1.75мм — Чорний', cat:'PLA', meta:'Чорний · PLA+ · 1 кг', rating:4.8, price:350, badge:'hit', grad:'linear-gradient(135deg,#2b2b33,#0c0c12)', img:'images/products/pla-blk.jpg', inStock:false},
+  {id:'petg-clr', name:'PETG 1.75мм — Прозорий', cat:'PETG', meta:'Прозорий · PETG · 3 кг', rating:4.9, price:1050, oldPrice:1350, badge:'sale', grad:'linear-gradient(135deg,#9fe7ff,#3aa6c9)', img:'images/products/petg-clr.jpg', inStock:false},
+  {id:'petg-blk', name:'PETG 1.75мм — Чорний', cat:'PETG', meta:'Чорний · PETG · 3 кг', rating:4.9, price:1050, oldPrice:1350, badge:'sale', grad:'linear-gradient(135deg,#3a3a3a,#0a0a0a)', img:'images/products/petg-blk.jpg', inStock:true},
+  {id:'petg-red', name:'PETG 1.75мм — Червоний', cat:'PETG', meta:'Червоний · PETG · 3 кг', rating:4.8, price:1050, oldPrice:1350, badge:'sale', grad:'linear-gradient(135deg,#ff5252,#b81d1d)', img:'images/products/petg-red.jpg', inStock:false},
+  {id:'petg-khaki', name:'PETG 1.75мм — Хакі', cat:'PETG', meta:'Хакі · PETG · 3 кг', rating:4.8, price:1050, oldPrice:1350, badge:'sale', grad:'linear-gradient(135deg,#a49463,#6b5f3e)', img:'images/products/petg-khaki.jpg', inStock:true},
+  {id:'petg-graphite', name:'PETG 1.75мм — Сірий графіт', cat:'PETG', meta:'Сірий графіт · PETG · 3 кг', rating:4.8, price:1050, oldPrice:1350, badge:'sale', grad:'linear-gradient(135deg,#7a7d85,#3f4147)', img:'images/products/petg-graphite.jpg', inStock:true},
+  {id:'pla-gld', name:'PLA Silk 1.75мм — Золотий', cat:'PLA', meta:'Золотий · PLA Silk · 1 кг', rating:4.9, price:410, badge:'hit', grad:'linear-gradient(135deg,#ffd87a,#c9941f)', img:'images/products/pla-gld.jpg', inStock:false}
 ];
 const badgeLabel = {hit:'Хіт продажів', new:'Новинка', sale:'Знижка'};
 
@@ -854,10 +858,10 @@ function renderProducts(filter='all'){
     const stars = '★'.repeat(Math.round(p.rating)) + '☆'.repeat(5-Math.round(p.rating));
     const specs = MATERIAL_SPECS[p.cat];
     const card = document.createElement('article');
-    card.className = 'product';
+    card.className = 'product' + (p.inStock===false ? ' oos' : '');
     card.innerHTML = `
       <div class="product-img" style="background:${p.grad}">
-        ${p.badge ? `<span class="badge ${p.badge}">${badgeLabel[p.badge]}</span>` : ''}
+        ${p.inStock===false ? `<span class="badge oos">Немає в наявності</span>` : (p.badge ? `<span class="badge ${p.badge}">${badgeLabel[p.badge]}</span>` : '')}
         <div class="reel" style="background:conic-gradient(from 0deg,rgba(255,255,255,.25),rgba(0,0,0,.25),rgba(255,255,255,.25))"></div>
         ${p.img ? `<img class="photo" src="${p.img}" alt="Філамент ${p.name} — ${p.meta}, купити в Україні" loading="lazy" onerror="this.remove()">` : ''}
       </div>
@@ -871,7 +875,9 @@ function renderProducts(filter='all'){
         </div>` : ''}
         <div class="price">${p.oldPrice ? `<span class="old">${p.oldPrice} грн</span>` : ''}${p.price} <span>грн</span></div>
         <div class="product-actions">
-          <button class="btn btn-primary btn-sm add-btn" data-id="${p.id}" aria-label="Додати ${p.name} в кошик">В кошик</button>
+          ${p.inStock===false
+            ? `<button class="btn btn-primary btn-sm" disabled>Немає в наявності</button>`
+            : `<button class="btn btn-primary btn-sm add-btn" data-id="${p.id}" aria-label="Додати ${p.name} в кошик">В кошик</button>`}
           <a href="#guide" class="btn btn-ghost btn-sm">Детальніше</a>
         </div>
       </div>`;
@@ -986,6 +992,13 @@ async function sendOrderToTelegram(text){
 
 $('#checkoutBtn').addEventListener('click', async ()=>{
   if(cart.length===0){ alert('Кошик порожній. Додайте товари перед оформленням.'); return; }
+  const unavailable = cart.filter(i => PRODUCTS.find(p=>p.id===i.id)?.inStock===false);
+  if(unavailable.length){
+    cart = cart.filter(i => !unavailable.some(u=>u.id===i.id));
+    saveCart(); updateCart();
+    alert(`На жаль, товар "${unavailable[0].name}"${unavailable.length>1?' та інші позиції':''} закінчився і прибраний з кошика. Перевірте кошик і оформіть замовлення ще раз.`);
+    return;
+  }
   const name = $('#coName').value.trim();
   const phone = $('#coPhone').value.trim();
   const carrier = $('#coCarrier').value;
