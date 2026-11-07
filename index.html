@@ -421,7 +421,12 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .ci-remove:hover{color:var(--accent)}
 .drawer-foot{border-top:1px solid var(--border);padding:20px 24px}
 .checkout-form{display:flex;flex-direction:column;gap:14px;margin-bottom:16px}
-.checkout-form .field{display:flex;flex-direction:column;gap:6px}
+.checkout-form .field{display:flex;flex-direction:column;gap:6px;position:relative}
+.suggestions{display:none;position:absolute;top:100%;left:0;right:0;margin-top:4px;background:var(--card-hover);border:1px solid var(--border-strong);border-radius:var(--radius-sm);max-height:220px;overflow-y:auto;z-index:20;box-shadow:0 12px 24px -8px rgba(0,0,0,.6)}
+.suggestions.show{display:block}
+.suggestion-item{padding:10px 14px;font-size:13px;color:#fff;cursor:pointer}
+.suggestion-item:hover,.suggestion-item.active{background:var(--border-strong)}
+.suggestion-empty{padding:10px 14px;font-size:13px;color:var(--text-mute)}
 .checkout-form label{font-size:12px;color:var(--text-mute);font-weight:500}
 .checkout-form label .optional{font-weight:400;opacity:.7}
 .checkout-form input,.checkout-form select,.checkout-form textarea{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;color:#fff;font-size:14px;font-family:inherit}
@@ -823,12 +828,14 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
       </div>
       <div class="field">
         <label for="coCity">Місто *</label>
-        <input type="text" id="coCity" placeholder="Напр. Київ" autocomplete="address-level2">
+        <input type="text" id="coCity" placeholder="Напр. Київ" autocomplete="off">
+        <div class="suggestions" id="citySuggestions"></div>
         <span class="field-error" id="errCity"></span>
       </div>
       <div class="field">
         <label for="coBranch">№ відділення *</label>
-        <input type="text" id="coBranch" placeholder="Напр. 25" inputmode="numeric">
+        <input type="text" id="coBranch" placeholder="Напр. 25" inputmode="numeric" autocomplete="off">
+        <div class="suggestions" id="branchSuggestions"></div>
         <span class="field-error" id="errBranch"></span>
       </div>
       <div class="field">
@@ -1084,6 +1091,72 @@ $('#coPhone').addEventListener('input', e=>{
   if(v.length>5) out += ' '+v.slice(5,7);
   if(v.length>7) out += ' '+v.slice(7,9);
   e.target.value = out;
+});
+
+/* ============ NOVA POSHTA: city/branch autocomplete ============ */
+const NP_API = 'https://api.novaposhta.ua/v2.0/json/';
+let cityWarehouses = [];
+
+async function npRequest(modelName, calledMethod, methodProperties){
+  try{
+    const res = await fetch(NP_API, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({apiKey:'', modelName, calledMethod, methodProperties})
+    });
+    const data = await res.json();
+    return data.success ? data.data : [];
+  }catch(e){ return []; }
+}
+function debounce(fn, ms){
+  let t;
+  return (...args)=>{ clearTimeout(t); t = setTimeout(()=>fn(...args), ms); };
+}
+function renderSuggestions(box, items, labelFn, onPick){
+  box.innerHTML = '';
+  if(!items.length){ box.classList.remove('show'); return; }
+  items.forEach(item=>{
+    const el = document.createElement('div');
+    el.className = 'suggestion-item';
+    el.textContent = labelFn(item);
+    el.addEventListener('mousedown', e=>{ e.preventDefault(); onPick(item); box.classList.remove('show'); });
+    box.appendChild(el);
+  });
+  box.classList.add('show');
+}
+
+const citySuggest = debounce(async q=>{
+  const box = $('#citySuggestions');
+  if($('#coCarrier').value !== 'Нова Пошта' || q.length < 2){ box.classList.remove('show'); return; }
+  const cities = await npRequest('Address', 'getCities', {FindByString:q, Limit:'8'});
+  renderSuggestions(box, cities, c=>`${c.Description}, ${c.AreaDescription} обл.`, async c=>{
+    $('#coCity').value = c.Description;
+    setFieldError('coCity','errCity','');
+    $('#coBranch').value='';
+    cityWarehouses = await npRequest('AddressGeneral', 'getWarehouses', {CityName:c.Description, Limit:'500'});
+  });
+}, 300);
+$('#coCity').addEventListener('input', e=> citySuggest(e.target.value.trim()));
+$('#coCity').addEventListener('blur', ()=> setTimeout(()=>$('#citySuggestions').classList.remove('show'), 150));
+
+const branchSuggest = debounce(q=>{
+  const box = $('#branchSuggestions');
+  if($('#coCarrier').value !== 'Нова Пошта' || !cityWarehouses.length){ box.classList.remove('show'); return; }
+  const matches = q
+    ? cityWarehouses.filter(w => w.Number.startsWith(q) || w.ShortAddress.toLowerCase().includes(q.toLowerCase()))
+    : cityWarehouses;
+  renderSuggestions(box, matches.slice(0,8), w=>`№${w.Number} — ${w.ShortAddress}`, w=>{
+    $('#coBranch').value = w.Number;
+    setFieldError('coBranch','errBranch','');
+  });
+}, 200);
+$('#coBranch').addEventListener('input', e=> branchSuggest(e.target.value.trim()));
+$('#coBranch').addEventListener('focus', e=> branchSuggest(e.target.value.trim()));
+$('#coBranch').addEventListener('blur', ()=> setTimeout(()=>$('#branchSuggestions').classList.remove('show'), 150));
+$('#coCarrier').addEventListener('change', ()=>{
+  $('#citySuggestions').classList.remove('show');
+  $('#branchSuggestions').classList.remove('show');
+  cityWarehouses = [];
 });
 
 function setFieldError(fieldId, errId, msg){
