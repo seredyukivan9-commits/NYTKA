@@ -420,11 +420,21 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .ci-remove{background:none;border:none;color:var(--text-mute);cursor:pointer;font-size:12px;transition:var(--t)}
 .ci-remove:hover{color:var(--accent)}
 .drawer-foot{border-top:1px solid var(--border);padding:20px 24px}
-.checkout-form{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
-.checkout-form input,.checkout-form select{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;color:#fff;font-size:14px;font-family:inherit}
-.checkout-form input::placeholder{color:var(--text-mute)}
+.checkout-form{display:flex;flex-direction:column;gap:14px;margin-bottom:16px}
+.checkout-form .field{display:flex;flex-direction:column;gap:6px}
+.checkout-form label{font-size:12px;color:var(--text-mute);font-weight:500}
+.checkout-form label .optional{font-weight:400;opacity:.7}
+.checkout-form input,.checkout-form select,.checkout-form textarea{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;color:#fff;font-size:14px;font-family:inherit}
+.checkout-form input::placeholder,.checkout-form textarea::placeholder{color:var(--text-mute)}
+.checkout-form textarea{resize:vertical;min-height:44px}
+.checkout-form input.invalid,.checkout-form select.invalid{border-color:#ef4444}
+.field-error{display:none;font-size:12px;color:#ef4444}
+.field-error.show{display:block}
 .checkout-form select{appearance:none;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="6" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" stroke="%238b93a7" stroke-width="1.5" fill="none" fill-rule="evenodd"/></svg>');background-repeat:no-repeat;background-position:right 14px center;padding-right:32px}
 .checkout-form select option{background:var(--card);color:#fff}
+.checkout-form .agree{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--text-mute);cursor:pointer}
+.checkout-form .agree input{margin-top:2px;accent-color:var(--accent)}
+.checkout-form .agree a{color:var(--accent)}
 .cart-total{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .cart-total .lbl{color:var(--text-mute);font-size:15px}
 .cart-total .sum{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;color:#fff}
@@ -794,14 +804,42 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
   <div class="cart-items" id="cartItems"></div>
   <div class="drawer-foot">
     <div class="checkout-form">
-      <input type="text" id="coName" placeholder="Ім'я та прізвище" aria-label="Ім'я та прізвище">
-      <input type="tel" id="coPhone" placeholder="Телефон" aria-label="Телефон">
-      <select id="coCarrier" aria-label="Служба доставки">
-        <option value="Нова Пошта">Нова Пошта</option>
-        <option value="Укрпошта">Укрпошта</option>
-      </select>
-      <input type="text" id="coCity" placeholder="Місто" aria-label="Місто">
-      <input type="text" id="coBranch" placeholder="№ відділення" aria-label="Номер відділення">
+      <div class="field">
+        <label for="coName">Ім'я та прізвище *</label>
+        <input type="text" id="coName" placeholder="Напр. Олена Коваленко" autocomplete="name">
+        <span class="field-error" id="errName"></span>
+      </div>
+      <div class="field">
+        <label for="coPhone">Телефон *</label>
+        <input type="tel" id="coPhone" placeholder="+380 XX XXX XX XX" autocomplete="tel" inputmode="tel">
+        <span class="field-error" id="errPhone"></span>
+      </div>
+      <div class="field">
+        <label for="coCarrier">Служба доставки</label>
+        <select id="coCarrier">
+          <option value="Нова Пошта">Нова Пошта</option>
+          <option value="Укрпошта">Укрпошта</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="coCity">Місто *</label>
+        <input type="text" id="coCity" placeholder="Напр. Київ" autocomplete="address-level2">
+        <span class="field-error" id="errCity"></span>
+      </div>
+      <div class="field">
+        <label for="coBranch">№ відділення *</label>
+        <input type="text" id="coBranch" placeholder="Напр. 25" inputmode="numeric">
+        <span class="field-error" id="errBranch"></span>
+      </div>
+      <div class="field">
+        <label for="coComment">Коментар до замовлення <span class="optional">(необов'язково)</span></label>
+        <textarea id="coComment" placeholder="Побажання щодо доставки, часу тощо" rows="2"></textarea>
+      </div>
+      <label class="agree">
+        <input type="checkbox" id="coAgree">
+        <span>Погоджуюсь з <a href="oferta/" target="_blank" rel="noopener">умовами публічної оферти</a></span>
+      </label>
+      <span class="field-error" id="errAgree"></span>
     </div>
     <div class="cart-total"><span class="lbl">Разом</span><span class="sum" id="cartSum">0 грн</span></div>
     <div class="row">
@@ -1034,6 +1072,36 @@ async function sendOrderToTelegram(text){
   if(!res.ok) throw new Error('Telegram request failed');
 }
 
+/* ============ CHECKOUT FORM: phone mask + inline validation ============ */
+$('#coPhone').addEventListener('input', e=>{
+  let v = e.target.value.replace(/\D/g,'');
+  if(v.startsWith('380')) v = v.slice(3);
+  else if(v.startsWith('0')) v = v.slice(1);
+  v = v.slice(0,9);
+  let out = '+380';
+  if(v.length>0) out += ' '+v.slice(0,2);
+  if(v.length>2) out += ' '+v.slice(2,5);
+  if(v.length>5) out += ' '+v.slice(5,7);
+  if(v.length>7) out += ' '+v.slice(7,9);
+  e.target.value = out;
+});
+
+function setFieldError(fieldId, errId, msg){
+  const input = document.getElementById(fieldId);
+  const err = document.getElementById(errId);
+  if(msg){
+    if(input) input.classList.add('invalid');
+    if(err){ err.textContent = msg; err.classList.add('show'); }
+  } else {
+    if(input) input.classList.remove('invalid');
+    if(err){ err.textContent=''; err.classList.remove('show'); }
+  }
+}
+['coName','coPhone','coCity','coBranch'].forEach(id=>{
+  $('#'+id).addEventListener('input', ()=> setFieldError(id, 'err'+id.slice(2), ''));
+});
+$('#coAgree').addEventListener('change', ()=> setFieldError('coAgree', 'errAgree', ''));
+
 $('#checkoutBtn').addEventListener('click', async ()=>{
   if(cart.length===0){ alert('Кошик порожній. Додайте товари перед оформленням.'); return; }
   const unavailable = cart.filter(i => PRODUCTS.find(p=>p.id===i.id)?.inStock===false);
@@ -1048,8 +1116,16 @@ $('#checkoutBtn').addEventListener('click', async ()=>{
   const carrier = $('#coCarrier').value;
   const city = $('#coCity').value.trim();
   const branch = $('#coBranch').value.trim();
-  if(!name || !phone){ alert("Вкажіть ім'я та телефон, щоб оформити замовлення."); return; }
-  if(!city || !branch){ alert('Вкажіть місто та номер відділення для доставки.'); return; }
+  const comment = $('#coComment').value.trim();
+  const agree = $('#coAgree').checked;
+
+  let valid = true;
+  setFieldError('coName','errName', name ? '' : "Вкажіть ім'я та прізвище"); if(!name) valid=false;
+  setFieldError('coPhone','errPhone', phone.replace(/\D/g,'').length>=12 ? '' : 'Перевірте номер телефону'); if(phone.replace(/\D/g,'').length<12) valid=false;
+  setFieldError('coCity','errCity', city ? '' : 'Вкажіть місто'); if(!city) valid=false;
+  setFieldError('coBranch','errBranch', branch ? '' : 'Вкажіть номер відділення'); if(!branch) valid=false;
+  setFieldError('coAgree','errAgree', agree ? '' : 'Потрібна згода з умовами оферти'); if(!agree) valid=false;
+  if(!valid) return;
 
   const totalQty = cart.reduce((s,i)=>s+i.qty,0);
   const total = cart.reduce((s,i)=>s+unitPrice(i.price,totalQty)*i.qty,0);
@@ -1057,7 +1133,7 @@ $('#checkoutBtn').addEventListener('click', async ()=>{
     const up = unitPrice(i.price, totalQty);
     return `• ${i.name} — ${i.qty} шт × ${up} грн = ${i.qty*up} грн`;
   }).join('\n');
-  const text = `Нове замовлення NYTKA\n\nІм'я: ${name}\nТелефон: ${phone}\nДоставка: ${carrier}, м. ${city}, відділення №${branch}\n\n${itemsList}\n\nРазом: ${total} грн`;
+  const text = `Нове замовлення NYTKA\n\nІм'я: ${name}\nТелефон: ${phone}\nДоставка: ${carrier}, м. ${city}, відділення №${branch}${comment ? `\nКоментар: ${comment}` : ''}\n\n${itemsList}\n\nРазом: ${total} грн`;
   const contents = ttContents(cart);
 
   await ttIdentifyByPhone(phone);
@@ -1073,7 +1149,7 @@ $('#checkoutBtn').addEventListener('click', async ()=>{
     }
     alert("Дякуємо за замовлення! Менеджер зв'яжеться з вами найближчим часом.");
     cart = []; saveCart(); updateCart(); closeCart();
-    $('#coName').value=''; $('#coPhone').value=''; $('#coCity').value=''; $('#coBranch').value='';
+    $('#coName').value=''; $('#coPhone').value=''; $('#coCity').value=''; $('#coBranch').value=''; $('#coComment').value=''; $('#coAgree').checked=false;
   }catch(err){
     alert('Не вдалося відправити замовлення. Спробуйте ще раз або зателефонуйте нам.');
   }finally{
